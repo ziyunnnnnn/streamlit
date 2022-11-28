@@ -22,181 +22,15 @@ import urllib.request
 import urllib
 #import moviepy.editor as moviepy
 import cv2
-import numpy as np
+
 import time
 import sys
 import sqlite3 
 import hashlib
-
-# @st.cache(persist=True)
-# def load_image(img):
-#     im = Image.open(img)
-#     return im
-
-
-# @st.cache(persist=True)
-# def yolo_objectdetection():
-
-#     # Load Yolo
-#     net = cv2.dnn.readNet("yolov3_training_last.weights", "yolov3_testing.cfg")
-
-#     # Name custom object
-#     classes = ["Land"]
-
-#     # Images path
-#     global images_path
-#     images_path = glob.glob(r"...\uploads")
-
-
-#     layer_names = net.getLayerNames()
-#     output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
-#     colors = np.random.uniform(0, 255, size=(len(classes), 3))
-
-#     # Insert here the path of your images
-#     random.shuffle(images_path)
-#     # loop through all the images
-#     for img_path in images_path:
-#         # Loading image
-#         img = cv2.imread(img_path)
-#         img = cv2.resize(img, None, fx=3.5, fy=3.5)
-#         height, width, channels = img.shape
-
-#         # Detecting objects
-#         blob = cv2.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
-
-#         net.setInput(blob)
-#         outs = net.forward(output_layers)
-
-#         # Showing informations on the screen
-#         class_ids = []
-#         confidences = []
-#         boxes = []
-#         for out in outs:
-#             for detection in out:
-#                 scores = detection[5:]
-#                 class_id = np.argmax(scores)
-#                 confidence = scores[class_id]
-#                 if confidence > 0.3:
-#                     # Object detected
-#                     print(class_id)
-#                     center_x = int(detection[0] * width)
-#                     center_y = int(detection[1] * height)
-#                     w = int(detection[2] * width)
-#                     h = int(detection[3] * height)
-
-#                     # Rectangle coordinates
-#                     x = int(center_x - w / 2)
-#                     y = int(center_y - h / 2)
-
-#                     boxes.append([x, y, w, h])
-#                     confidences.append(float(confidence))
-#                     class_ids.append(class_id)
-
-#         indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
-#         print(indexes)
-#         font = cv2.FONT_HERSHEY_PLAIN
-#         for i in range(len(boxes)):
-#             if i in indexes:
-#                 x, y, w, h = boxes[i]
-#                 label = str(classes[class_ids[i]])
-#                 color = colors[class_ids[i]]
-#                 cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
-#                 cv2.putText(img, label, (x, y + 30), font, 3, color, 2)
-
-#         cv2.imshow('Image',img)
-#         key = cv2.waitKey(0)
-
-#     cv2.destroyAllWindows()
-
-
-# def main():
-#     """
-#     Land Detection App
-#     """
-#     st.title('이륜자동차 위험물 탐지')
-#     #st.text('Build with Streamlit,Yolov3 and OpenCV')
-
-#     menu = ['이미지','동영상', '실시간 영상']
-#     choice = st.sidebar.selectbox('Menu',menu)
-
-#     if choice == '이미지':
-#         st.subheader(' 위험물 탐지')
-#         image_file = st.file_uploader("Upload Image",type=['jpg', 'png', 'jpeg'])
-
-#         if image_file is not None:
-#             our_image = Image.open(image_file)
-#             st.text('Original Image')
-#             # st.write(type(our_image))
-#             st.image(our_image)
-
-#         enhance_type = st.sidebar.radio('Enhance Type', ['Original', 'Gray-Scale', 'Contrast', 'Brightness', 'Blurring'])
-
-#         if enhance_type == 'Gray-Scale':
-#             new_img = np.array(our_image.convert('RGB'))
-#             img = cv2.cvtColor(new_img, 1)
-#             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-#             # st.write(new_img)
-#             st.image(gray)
-
-#         if enhance_type == 'Contrast':
-#             c_rate = st.sidebar.slider('Contrast', 0.5, 3.5)
-#             enhancer = ImageEnhance.Contrast(our_image)
-#             img_output = enhancer.enhance(c_rate)
-#             st.image(img_output)
-
-#         if enhance_type == 'Brightness':
-#             c_rate = st.sidebar.slider('Brightness', 0.5, 3.5)
-#             enhancer = ImageEnhance.Brightness(our_image)
-#             img_output = enhancer.enhance(c_rate)
-#             st.image(img_output)
-
-#         if enhance_type == 'Blurring':
-#             new_img = np.array(our_image.convert('RGB'))
-#             blur_rate = st.sidebar.slider('Blurring', 0.5, 3.5)
-#             img = cv2.cvtColor(new_img, 1)
-#             blur_img = cv2.GaussianBlur(img, (11, 11), blur_rate)
-#             st.image(blur_img)
-#         else:
-#             pass
-
-#         # Land Detection
-#         task = ['Land']
-#         feature_choice = st.sidebar.selectbox("Find Features", task)
-#         if st.button("Process"):
-#             if feature_choice == 'Land':
-#                 result_img = yolo_objectdetection()
-#                 result_img = []
-#                 st.image(result_img)
-
-#                 st.success("Found {} Land".format(len(result_img)))
-
-#             else:
-#                 st.markdown('## Land not Detected')
-#                 st.markdown('## Kindly upload correct image ')
-
-
-
-#     elif choice == '동영상':
-#         st.subheader(' 위험물 탐지')
-#         video_file = st.file_uploader('video', type = ['mp4'])
-#         cap = cv2.VideoCapture(video_file)
-
-
-#     elif choice == '실시간 영상':
-#         st.subheader(' 위험물 탐지')
-#         video_file = st.file_uploader('video', type = ['mp4'])
-#         cap = cv2.VideoCapture(video_file)
-
-
-
-# if __name__ == '__main__':
-#     main()
-# -------------------------------------------------------------------------------
 import streamlit as st
 import pandas as pd
 import cv2
 from PIL import Image, ImageEnhance
-import numpy as np
 import os
 import tensorflow as tf
 import tensorflow_hub as hub
@@ -209,64 +43,13 @@ import cv2
 import numpy as np
 import time
 import sys
+import requests, json
+import pandas as pd
+import numpy as np
+import numpy as np
+import pandas as pd
+import pydeck as pdk
 
-# def main():
-#     st.sidebar.title("Select Activity")
-#     choice  = st.sidebar.selectbox("MODE",("About","Object Detection(Image)","Object Detection(Video)"))
-    
-#     if choice == "Object Detection(Image)":
-#         st.subheader(' 위험물 탐지')
-#         file = st.file_uploader("Upload Image",type=['jpg', 'png', 'jpeg'])
-
-#     if file!= None:
-#         img1 = Image.open(file)
-#         img2 = np.array(img1)
-
-#         st.image(img1, caption = "Uploaded Image")
-
-#         # 모델 관련
-#         config_path = r'config_n_weights\yolov3.cfg'
-#         weights_path = r'config_n_weights\yolov3.weights'
-#         # net = cv2.dnn.readNetFromDarknet(config_path, weights_path)
-
-#         # img_detected = model.detect(img1)
-#         st.image(img1, caption = "detected Image")   # 처리된 이미지
-#         # my_bar = st.progress(0)
-#         # confThreshold =st.slider('Confidence', 0, 100, 50)
-#         # nmsThreshold= st.slider('Threshold', 0, 100, 20)
-#         #classNames = []
-#         # whT = 320
-#         # url = "https://raw.githubusercontent.com/zhoroh/ObjectDetection/master/labels/coconames.txt"
-#         # f = urllib.request.urlopen(url)
-#         # classNames = [line.decode('utf-8').strip() for  line in f]
-#         #f = open(r'C:\Users\Olazaah\Downloads\stream\labels\coconames.txt','r')
-#         #lines = f.readlines()
-#         #classNames = [line.strip() for line in lines]
-
-
-
-
-#     elif choice == "Object Detection(Video)":
-#         st.subheader(' 위험물 탐지')
-#         video_file = st.file_uploader('video', type = ['mp4'])
-#         cap = cv2.VideoCapture(video_file)
-#         try:
-
-#             clip = moviepy.VideoFileClip('detected_video.mp4')
-#             clip.write_videofile("myvideo.mp4")
-#             st_video = open('myvideo.mp4','rb')
-#             video_bytes = st_video.read()
-#             st.video(video_bytes)
-#             st.write("Detected Video") 
-#         except OSError:
-#             ''
-
-#     elif choice == "About":
-#         print()
-        
-
-# if __name__ == '__main__':
-# 		main()	
 
 # 로그인 화면 
 conn = sqlite3.connect('database.db')
@@ -297,8 +80,10 @@ def main():
 
 	#st.title("로그인 기능 테스트")
 
-	menu = ["Login","signUp","Home"]
-	choice = st.sidebar.selectbox("Login",menu)
+	menu = ["Login","signUp","Dectection", "LiveWebcam", "Map"]
+	choice = st.sidebar.selectbox("MENU",menu)
+
+
 
     
 	if choice == "Login":
@@ -329,13 +114,94 @@ def main():
 			st.success("계정 생성에 성공했습니다.")
 			st.info("로그인 화면에서 로그인 해주세요.")
     
-	elif choice == "Home":
-		st.subheader("새 계정을 만듭니다.")		
-		selected_item = st.radio("Radio Part", ("A", "B", "C"))
-		if selected_item == "A":
-			st.write("A!!")
-		elif selected_item == "B":
-			st.write("B!")
+	elif choice == "Dectection":
+		st.subheader("위험물 탐지")		
+		selected_item = st.sidebar.radio("select", ("Image", "Video"))
+		if selected_item == "Image":
+			file = st.file_uploader("Upload Image",type=['jpg', 'png', 'jpeg'])
+			if file!= None:
+				img1 = Image.open(file)
+				img2 = np.array(img1)
+				st.image(img1, caption = "원본 이미지")
+				st.image(img1, caption = "탐지된 이미지")
+		elif selected_item == "Video":
+			video_file = st.file_uploader('video', type = ['mp4'])
+			cap = cv2.VideoCapture(video_file)
+	elif choice == "LiveWebcam":
+		st.title("Webcam Live Feed")
+		run = st.checkbox('Run')
+		FRAME_WINDOW = st.image([])
+		camera = cv2.VideoCapture(0)
+
+		while run:
+			_, frame = camera.read()
+			frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+			FRAME_WINDOW.image(frame)
+		else:
+			st.write('Stopped')	
+
+	elif choice == "Map":
+				# 현재위치 좌표 얻기 --------------------------------------------------------------
+		
+
+		def current_location():
+			here_req = requests.get("http://www.geoplugin.net/json.gp")
+
+			if (here_req.status_code != 200):
+				print("현재좌표를 불러올 수 없음")
+			else:
+				location = json.loads(here_req.text)
+				crd = {float(location["geoplugin_latitude"]), float(location["geoplugin_longitude"])}
+				crd = list(crd)
+				gps = pd.DataFrame( [[crd[1],crd[0]]], columns=['위도','경도'])
+			
+			return gps
+			
+		# 맵에 위치 표시 ------------------------------------------------------------------------------------------
+
+
+		# 위치정보 상세 (단, data에 위도, 경도 컬럼이 있어야 함)
+
+		def location_detail(data_c):
+			data = data_c.copy()
+
+			# 아이콘 이미지 불러오기
+			ICON_URL = "https://cdn-icons-png.flaticon.com/128/2268/2268142.png"
+			icon_data = {
+				# Icon from Wikimedia, used the Creative Commons Attribution-Share Alike 3.0
+				# Unported, 2.5 Generic, 2.0 Generic and 1.0 Generic licenses
+				"url": ICON_URL,
+				"width": 242,
+				"height": 242,
+				"anchorY": 242,
+			}
+			data["icon_data"] = None
+			for i in data.index:
+				data["icon_data"][i] = icon_data
+			la, lo = np.mean(data["위도"]), np.mean(data["경도"])
+
+			layers = [
+				pdk.Layer(
+					type="IconLayer",
+					data=data,
+					get_icon="icon_data",
+					get_size=4,
+					size_scale=15,
+					get_position="[경도, 위도]",
+					pickable=True,
+				)
+			]
+
+			# Deck 클래스 인스턴스 생성
+			deck = pdk.Deck(
+				map_style=None, initial_view_state=pdk.ViewState(longitude=lo, latitude=la, zoom=11, pitch=50), layers=layers
+			)
+
+			st.pydeck_chart(deck, use_container_width=True)
+
+		# 실시간 위치 지도 표시 함수 실행 ------------------------------------------------------------------------
+		gps = current_location()
+		location_detail(gps)
 
 if __name__ == '__main__':
 	main()
