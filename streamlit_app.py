@@ -42,7 +42,6 @@ import moviepy.editor as moviepy
 import cv2
 import numpy as np
 import time
-import sys
 import requests, json
 import pandas as pd
 import numpy as np
@@ -206,3 +205,23 @@ def main():
 if __name__ == '__main__':
 	main()
 
+from io import StringIO
+from pathlib import Path
+import streamlit as st
+import time
+#from detect import detect
+import os
+import sys
+import argparse
+from PIL import Image
+
+
+from typing import List
+
+import cv2
+import torch
+import numpy as np
+import pandas as pd
+import streamlit as st
+import matplotlib.colors as mcolors
+from PIL import Image
